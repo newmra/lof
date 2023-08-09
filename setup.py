@@ -20,6 +20,7 @@ setup(
     author="Ralph Neumann",
     maintainer="Ralph Neumann",
     description="Framework for a system wide event communication between nodes with undo/redo functionality for UIs.",
+    long_description_content_type="text/markdown",
     long_description="""
     XNodes (Exchanging nodes) provides a global event bus to which individual nodes can connect to and send events to 
     other nodes. Nodes do not know each other, they communicate via the event bus by their individual IDs.
@@ -31,5 +32,6 @@ setup(
     """,
     version='v0.0.11-beta',
     packages=find_packages(),
-    install_requires=[]
+    install_requires=[],
+    license="GNU GENERAL PUBLIC LICENSE 3"
 )
