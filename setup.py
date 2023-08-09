@@ -17,7 +17,19 @@ from setuptools import setup, find_packages
 
 setup(
     name='xnodes',
-    version='v0.0.10-beta',
+    author="Ralph Neumann",
+    maintainer="Ralph Neumann",
+    description="Framework for a system wide event communication between nodes with undo/redo functionality for UIs.",
+    long_description="""
+    XNodes (Exchanging nodes) provides a global event bus to which individual nodes can connect to and send events to 
+    other nodes. Nodes do not know each other, they communicate via the event bus by their individual IDs.
+    The framework also provides a possibility for nodes to offer undo-events when receiving events. If an event alters
+    the state of a node, the node has then the responsibility to provide an event which undos the changes made by the
+    received event. Those undo-events are stored by the event bus and can then be fed again into the system.
+    
+    For more information and code examples, please visit the Github project.
+    """,
+    version='v0.0.11-beta',
     packages=find_packages(),
     install_requires=[]
 )
