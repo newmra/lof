@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-lof: Live Object Framework
-     Simplistic event framework which enables unrelated objects to share information, alter each other states and
-     provides the possibility to undo made changes.
+xnodes: Exchange nodes framework
+        Simplistic event framework which enables unrelated nodes to exchange information, alter each other states and
+        provides the possibility to undo made changes.
 
 Author: Ralph Neumann
 
