@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-lof: Live Object Framework
-     Simplistic event framework which enables unrelated objects to share information, alter each other states and
-     provides the possibility to undo made changes.
+xnodes: Exchange nodes framework
+        Simplistic event framework which enables unrelated nodes to exchange information, alter each other states and
+        provides the possibility to undo made changes.
 
 Author: Ralph Neumann
 
@@ -16,7 +16,7 @@ the Free Software Foundation, see <https://www.gnu.org/licenses/>.
 from setuptools import setup, find_packages
 
 setup(
-    name='lof',
+    name='xnodes',
     version='0.1.0',
     packages=find_packages(),
     install_requires=[]
