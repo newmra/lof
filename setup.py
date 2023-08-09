@@ -30,7 +30,7 @@ setup(
     
     For more information and code examples, please visit the Github project.
     """,
-    version='v0.0.11-beta',
+    version='v0.0.12-beta',
     packages=find_packages(),
     install_requires=[],
     license="GNU GENERAL PUBLIC LICENSE 3"
