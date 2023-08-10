@@ -137,7 +137,7 @@ class EventHandleMeta(type):
         return multi_dict
 
 
-def handle_event(event_identifier: str):
+def xevent(event_identifier: str):
     """
     Decorator which registers an event or action handler in a node.
     :param event_identifier: String of the event or action which this decorator handles.
@@ -156,29 +156,14 @@ class XNode(object, metaclass=EventHandleMeta):
     Main class for nodes.
     """
 
-    def __init__(self, category: str):
+    def __init__(self, node_type: str):
         """
         Init of node.
-        :param category: Category of the node.
+        :param node_type: Category of the node.
         """
-        self._category = category
-        self._id = XNodeBus.register(self)
+        self._type = node_type
+        self._identifier = XNodeBus._register(self)
         self._undo_event = None
-
-    def delete(self):
-        """
-        Delete the node and unregister it from the application xnodes.
-        :return: None
-        """
-        XNodeBus.unregister(self)
-
-    @property
-    def category(self) -> str:
-        return self._category
-
-    @property
-    def subscribed_events(self) -> list[str]:
-        return getattr(self, EVENT_HANDLERS)
 
     @property
     def id(self) -> str:
@@ -186,7 +171,7 @@ class XNode(object, metaclass=EventHandleMeta):
         Get the id property.
         :return: The id property.
         """
-        return self._id
+        return self._identifier
 
     @id.setter
     def id(self, new_id: str):
@@ -196,7 +181,22 @@ class XNode(object, metaclass=EventHandleMeta):
         :return: None
         """
         XNodeBus.unregister(self)
-        self._id = XNodeBus.register(self, new_id)
+        self._identifier = XNodeBus._register(self, new_id)
+
+    def delete(self):
+        """
+        Delete the node and unregister it from the bus.
+        :return: None
+        """
+        XNodeBus.unregister(self)
+
+    @property
+    def type(self) -> str:
+        return self._type
+
+    @property
+    def subscribed_events(self) -> list[str]:
+        return getattr(self, EVENT_HANDLERS)
 
     def publish(self, event_identifier: str, target: str, *parameters):
         """
@@ -215,7 +215,7 @@ class XNode(object, metaclass=EventHandleMeta):
         """
         XNodeBus.broadcast(event_identifier, self.id, *parameters)
 
-    def push_undo(self, event_identifier: str, *parameters):
+    def set_undo_event(self, event_identifier: str, *parameters):
         """
         Push an undo action to the application xnodes.
         :param event_identifier: The action tag of the undo action.
@@ -242,11 +242,10 @@ class XNode(object, metaclass=EventHandleMeta):
         return self._undo_event
 
 
-def make_live(super_class: type, category: str) -> type:
+def create_xnode(super_class: type, node_type: str) -> type:
     """
     Converts the passed super class to a node. Necessary for classes which have a custom metaclass.
     :param super_class: Super class to convert to a node.
-    :param category: Category of the node.
     :return: The combined super class.
     """
     metaclass = type("CombinedMetaClass", (type(super_class), type(XNode)), {})
@@ -258,7 +257,7 @@ def make_live(super_class: type, category: str) -> type:
 
         def __init__(self, *super_class_args):
             super_class.__init__(self, *super_class_args)
-            XNode.__init__(self, category)
+            XNode.__init__(self, node_type)
 
     return MergedSuperclass
 
@@ -273,19 +272,8 @@ class XNodeBus:
     _nodes: dict[str, XNode] = {}
     _event_descriptions: dict[str, EventDescription] = {}
     _subscriptions: dict[str, list[str]] = defaultdict(list)
-    _is_running = False
     _indices: dict[str, int] = defaultdict(int)
     _undo_redo_change_handler: Callable or None = None
-
-    @staticmethod
-    def start():
-        XNodeBus._is_running = True
-
-        for node_id, node in XNodeBus._nodes.items():
-            for event in node.subscribed_events:
-                assert event in XNodeBus._event_descriptions, f"Unknown event {event}"
-
-                XNodeBus._subscriptions[event].append(node_id)
 
     @staticmethod
     def set_undo_redo_change_handler(undo_redo_change_handler: Callable):
@@ -294,12 +282,11 @@ class XNodeBus:
     @staticmethod
     def add_event(identifier: str, parameter_types, log_level: int = logging.INFO):
         assert identifier not in XNodeBus._event_descriptions, "Event already added."
-        assert not XNodeBus._is_running, "Events cannot be added once LOF has started."
 
         XNodeBus._event_descriptions[identifier] = EventDescription(parameter_types, log_level)
 
     @staticmethod
-    def register(node: XNode, predefined_id: str or None = None) -> str:
+    def _register(node: XNode, predefined_id: str or None = None) -> str:
         """
         Register a new node.
         :param node: The node to register.
@@ -310,17 +297,22 @@ class XNodeBus:
             new_id = predefined_id
             assert predefined_id not in XNodeBus._nodes
 
-        elif node.category not in XNodeBus._indices:
-            new_id = node.category
+        elif node.type not in XNodeBus._indices:
+            new_id = node.type
 
         else:
-            new_id = f"{node.category}_{XNodeBus._indices[node.category]}"
+            new_id = f"{node.type}_{XNodeBus._indices[node.type]}"
             while new_id in XNodeBus._nodes:
-                XNodeBus._indices[node.category] += 1
-                new_id = f"{node.category}_{XNodeBus._indices[node.category]}"
+                XNodeBus._indices[node.type] += 1
+                new_id = f"{node.type}_{XNodeBus._indices[node.type]}"
 
-        XNodeBus._indices[node.category] += 1
+        XNodeBus._indices[node.type] += 1
         XNodeBus._nodes[new_id] = node
+
+        for event in node.subscribed_events:
+            assert event in XNodeBus._event_descriptions, f"Unknown event {event}"
+
+            XNodeBus._subscriptions[event].append(new_id)
 
         return new_id
 
@@ -374,8 +366,6 @@ class XNodeBus:
 
     @staticmethod
     def _publish_new_events(events: list[XEvent]):
-        assert XNodeBus._is_running, "LOF not yet started"
-
         if undo_events := XNodeBus._publish_events(events):
             XNodeBus._redo_stack.clear()
             XNodeBus._append_undo_event(undo_events)
@@ -399,8 +389,6 @@ class XNodeBus:
         Perform the last undo action and save the redo action to the redo stack.
         :return: None
         """
-        assert XNodeBus._is_running, "LOF not started yet"
-
         if not XNodeBus._undo_stack:
             return
 
@@ -416,8 +404,6 @@ class XNodeBus:
         Perform the last redo action and save the undo action to the undo stack.
         :return: None
         """
-        assert XNodeBus._is_running, "LOF not started yet"
-
         if not XNodeBus._redo_stack:
             return
 
