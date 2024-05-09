@@ -1,15 +1,13 @@
 # XNodes (Exchanging nodes)
 
-### WORK IN PROGRESS, CURRENTLY NOT FUNCTIONAL
-
 ## About
 
-XNodes is an application framework which provides an event mechanism for unrelated nodes by utilizing a global event bus. The framework's initial purpose was to establish a lightweigth mechanism for exchanging information between UI widgets and a data model, all without necessitating their mutual awareness. Upon receiving an event which alters the state of a node, the receiving node can provide an event in return which undos the made changes. This way an easy to use but powerful undo/redo mechanism is realized.
+XNodes is an application framework which provides an event mechanism for unrelated nodes by utilizing a global event bus. The framework's initial purpose was to establish a lightweight mechanism for exchanging information between UI widgets and a data model, all without necessitating their mutual awareness. Upon receiving an event which alters the state of a node, the receiving node can provide an event in return which undoes the made changes. This way an easy to use but powerful undo/redo mechanism is realized.
 
 ## How to use
 
 ### Application start
-Before any node is constructed, all events with their parameters which are used within the system have to be registers in the event bus called _XNodeBus_. _XNodeBus_ consists of staticmethods only, so instantiating it is not necessary. When adding an event to the bus, one can provide an optional log level for that event which will be used during logging when that event is published, default log level is _INFO_.
+Before any node is constructed, all events with their parameters which are used within the system have to be registered in the core called _XCore_. _XCore_ consists of static methods only, so instantiating it is not necessary. When adding an event to the core, one can provide an optional log level for that event which will be used during logging when that event is published, default log level is _INFO_.
 
 ```
 import logging
