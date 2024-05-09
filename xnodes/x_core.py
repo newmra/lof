@@ -14,7 +14,7 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from types import GeneratorType
-from typing import Callable, Optional, Dict, List, Set, Tuple, Union, Self, Any, Iterable
+from typing import Callable, Optional, Dict, List, Set, Tuple, Union, Any, Iterable
 
 from xnodes.x_core_configuration import XCoreConfiguration
 from xnodes.x_event_handler import X_EVENT_HANDLER_FLAG
@@ -460,7 +460,7 @@ class EventPublishingContext:
 
         self._events = events
 
-    def __enter__(self) -> Self:
+    def __enter__(self):
         """
         Enter the context. If no event is currently published, an empty line is logged to separate the event stack from
         the remaining log.
