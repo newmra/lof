@@ -24,6 +24,12 @@ LOGGER = logging.getLogger(__name__)
 
 MINIMUM_IDENTIFIER_MAXIMUM_LOGGING_LENGTH = 10
 
+# pylint: disable = global-statement
+# Globals are only used for private members.
+
+# pylint: disable = invalid-name
+# Global constants are not used as classes.
+
 # First possible type: Just the name of the parameter.
 EVENT_PARAMETER_TYPE_1 = str
 
@@ -38,6 +44,9 @@ EVENT_PARAMETER_TYPE_4 = Tuple[str, str]
 
 EVENT_PARAMETER_TYPE = Union[
     EVENT_PARAMETER_TYPE_1, EVENT_PARAMETER_TYPE_2, EVENT_PARAMETER_TYPE_3, EVENT_PARAMETER_TYPE_4]
+
+
+# pylint: enable = invalid-name
 
 
 @dataclass
@@ -81,11 +90,14 @@ _EVENT_SUBSCRIPTIONS[X_UNDO_EVENT].add(X_CORE_NODE_IDENTIFIER)
 _EVENT_SUBSCRIPTIONS[X_REDO_EVENT].add(X_CORE_NODE_IDENTIFIER)
 _EVENT_SUBSCRIPTIONS[X_CLEAR_UNDO_REDO_EVENTS].add(X_CORE_NODE_IDENTIFIER)
 
+# pylint: disable = unnecessary-lambda
+# Functions are declared later, so lambda is necessary.
 _EVENT_HANDLERS: Dict[Tuple[str, str], Callable] = {
     (X_UNDO_EVENT, X_CORE_NODE_IDENTIFIER): lambda: _undo_events(),
     (X_REDO_EVENT, X_CORE_NODE_IDENTIFIER): lambda: _redo_events(),
     (X_CLEAR_UNDO_REDO_EVENTS, X_CORE_NODE_IDENTIFIER): lambda: _clear_undo_redo_stacks()
 }
+# pylint: enable = unnecessary-lambda
 
 _EVENT_DESCRIPTIONS: Dict[str, XEventDescription] = {
     X_CORE_START: XEventDescription(

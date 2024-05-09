@@ -6,7 +6,7 @@ xnodes: Exchange nodes framework
 Author: Ralph Neumann (@newmra)
 
 This framework is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
-License as published by the Free Software Foundation, see <https://www.gnu.org/licenses>.
+License as published by the Free Software Foundation, see <https://www.gnu.org/licenses/>.
 """
 
 from .x_core import X_CORE_NODE_IDENTIFIER, X_CORE_START, X_UNDO_EVENT, X_REDO_EVENT, X_MAP_UNDO_REDO_COUNTERS, \
