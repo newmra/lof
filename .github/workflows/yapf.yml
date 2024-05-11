@@ -19,13 +19,10 @@ jobs:
       - name: Formatting the code
         run: |
           poetry run yapf -i -r --style=.yapf xnodes tests
-  check-changes:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Check for uncommitted changes
+      - name: Check for changes
         uses: ${{ runner.os }}-latest/git@v4
         with:
-          args: diff-index --quiet HEAD --
-        # Fail the workflow if exit code is non-zero (uncommitted changes)
-        fail-on-stderr: true
+          args: diff --name-only HEAD^ HEAD
+        # Fail the workflow if there are changes (exit code 1)
+        if: ${{ steps.check-changes.outputs == '' }}  # Check for empty output (no changes)
+        exit-code: 1
