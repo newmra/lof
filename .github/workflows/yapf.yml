@@ -23,5 +23,7 @@ jobs:
         run: |
            diff_output=$(git diff HEAD)
            if [ -n "$diff_output" ]; then
+             echo "Yapf detected files which were not properly formatted. Following files are affected:"
+             echo $diff_output
              exit 1
            fi
