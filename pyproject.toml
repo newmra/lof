@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xnodes"
-version = "0.1.0"
+version = "0.2.0"
 description = "XNodes is an application framework which provides an event mechanism for unrelated nodes by utilizing a global event bus"
 authors = ["newmra"]
 license = "GPL-3.0"
