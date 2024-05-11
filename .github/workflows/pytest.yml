@@ -1,9 +1,9 @@
-name: Pylint
+name: Pytest
 
 on: [ pull_request ]
 
 jobs:
-  Pylint:
+  Pytest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,6 +16,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry install --with dev
-      - name: Analysing the code with pylint
+      - name: Running unittests with coverage
         run: |
-          poetry run pylint --rcfile=.pylintrc xnodes tests
+          poetry run pytest --cov=xnodes --cov-fail-under=100
