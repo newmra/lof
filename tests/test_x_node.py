@@ -87,8 +87,8 @@ def test_publish_event(monkeypatch) -> None:
     register_node_mock.assert_called_once_with(NODE_TYPE, node)
 
     node.publish(EVENT_IDENTIFIER, receiver_node_identifier, parameter_1=PARAMETER_1, parameter_2=PARAMETER_2)
-    publish_mock.assert_called_once_with(
-        EVENT_IDENTIFIER, node.identifier, receiver_node_identifier, expected_event_parameters)
+    publish_mock.assert_called_once_with(EVENT_IDENTIFIER, node.identifier, receiver_node_identifier,
+                                         expected_event_parameters)
 
 
 def test_broadcast_event(monkeypatch) -> None:

@@ -30,8 +30,8 @@ EVENT_DESCRIPTION = "EVENT_DESCRIPTION"
 EVENT_PARAMETER_NAME_1 = "parameter_1"
 EVENT_PARAMETER_NAME_2 = "parameter_2"
 
-
 # pylint: disable = protected-access
+
 
 # noinspection PyProtectedMember
 def _reset_x_core() -> None:
@@ -52,33 +52,28 @@ def _reset_x_core() -> None:
 
     x_core._EVENT_HANDLERS.clear()
     x_core._EVENT_HANDLERS.update({
-        (x_core.X_UNDO_EVENT, x_core.X_CORE_NODE_IDENTIFIER): x_core._undo_events,
-        (x_core.X_REDO_EVENT, x_core.X_CORE_NODE_IDENTIFIER): x_core._redo_events,
-        (x_core.X_CLEAR_UNDO_REDO_EVENTS, x_core.X_CORE_NODE_IDENTIFIER): x_core._clear_undo_redo_stacks
+        (x_core.X_UNDO_EVENT, x_core.X_CORE_NODE_IDENTIFIER):
+        x_core._undo_events,
+        (x_core.X_REDO_EVENT, x_core.X_CORE_NODE_IDENTIFIER):
+        x_core._redo_events,
+        (x_core.X_CLEAR_UNDO_REDO_EVENTS, x_core.X_CORE_NODE_IDENTIFIER):
+        x_core._clear_undo_redo_stacks
     })
 
     x_core._EVENT_DESCRIPTIONS.clear()
     x_core._EVENT_DESCRIPTIONS.update({
-        x_core.X_CORE_START: x_core.XEventDescription(
-            set(), x_core.logging.INFO
-        ),
-        x_core.X_UNDO_EVENT: x_core.XEventDescription(
-            set(), x_core.logging.INFO
-        ),
-        x_core.X_REDO_EVENT: x_core.XEventDescription(
-            set(), x_core.logging.INFO
-        ),
+        x_core.X_CORE_START:
+        x_core.XEventDescription(set(), x_core.logging.INFO),
+        x_core.X_UNDO_EVENT:
+        x_core.XEventDescription(set(), x_core.logging.INFO),
+        x_core.X_REDO_EVENT:
+        x_core.XEventDescription(set(), x_core.logging.INFO),
 
         # (Args: Undo counter, redo counter)
-        x_core.X_MAP_UNDO_REDO_COUNTERS: x_core.XEventDescription(
-            {
-                ("undo_counter", int),
-                ("redo_counter", int)
-            }, x_core.logging.INFO
-        ),
-        x_core.X_CLEAR_UNDO_REDO_EVENTS: x_core.XEventDescription(
-            set(), x_core.logging.INFO
-        )
+        x_core.X_MAP_UNDO_REDO_COUNTERS:
+        x_core.XEventDescription({("undo_counter", int), ("redo_counter", int)}, x_core.logging.INFO),
+        x_core.X_CLEAR_UNDO_REDO_EVENTS:
+        x_core.XEventDescription(set(), x_core.logging.INFO)
     })
 
     x_core._EVENT_LENGTH = 24
@@ -106,8 +101,10 @@ def test_register_event_raise_invalid_log_level() -> None:
     """
     _reset_x_core()
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Attempted to register event '{EVENT_IDENTIFIER_1}', but the log_level is not of type 'int'.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Attempted to register event '{EVENT_IDENTIFIER_1}', but the log_level is not of type 'int'.")):
         # noinspection PyTypeChecker
         x_core.register_event(EVENT_IDENTIFIER_1, [EVENT_PARAMETER_NAME_1], log_level="DEBUG")
 
@@ -124,23 +121,14 @@ def test_register_event_raise_parameters_not_iterable() -> None:
         x_core.register_event(EVENT_IDENTIFIER_1, 42)
 
 
-@pytest.mark.parametrize("parameter", [
-    42,
-    tuple(),
-    (1, 2, 3, 4),
-    (42,),
-    ("", 42),
-    ("", 42, ""),
-    ("", int, 42)
-], ids=[
-    "Not string or tuple",
-    "Tuple has less than one element",
-    "Tuple has more than 3 elements",
-    "First element of tuple is not a string",
-    "Second element of tuple is not a string or a type",
-    "Tuple with three elements, but second element is not a type",
-    "Tuple with three elements, but third element is not a string"
-])
+@pytest.mark.parametrize("parameter", [42, tuple(), (1, 2, 3, 4), (42, ), ("", 42), ("", 42, ""), ("", int, 42)],
+                         ids=[
+                             "Not string or tuple", "Tuple has less than one element", "Tuple has more than 3 elements",
+                             "First element of tuple is not a string",
+                             "Second element of tuple is not a string or a type",
+                             "Tuple with three elements, but second element is not a type",
+                             "Tuple with three elements, but third element is not a string"
+                         ])
 def test_register_event_raise_invalid_parameter(parameter) -> None:
     """
     Register an event and check that invalid parameters are correctly recognized.
@@ -149,23 +137,22 @@ def test_register_event_raise_invalid_parameter(parameter) -> None:
     """
     _reset_x_core()
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Attempted to register event '{EVENT_IDENTIFIER_1}', but parameter 0 has an invalid type, has to be "
-            f"of type {str(x_core.EVENT_PARAMETER_TYPE)}.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Attempted to register event '{EVENT_IDENTIFIER_1}', but parameter 0 has an invalid type, has to be "
+                f"of type {str(x_core.EVENT_PARAMETER_TYPE)}.")):
         x_core.register_event(EVENT_IDENTIFIER_1, {parameter})
 
 
 @pytest.mark.parametrize("parameter", [
-    EVENT_IDENTIFIER_1,
-    (EVENT_IDENTIFIER_1, EVENT_DESCRIPTION),
-    (EVENT_IDENTIFIER_1, int),
+    EVENT_IDENTIFIER_1, (EVENT_IDENTIFIER_1, EVENT_DESCRIPTION), (EVENT_IDENTIFIER_1, int),
     (EVENT_IDENTIFIER_1, int, EVENT_DESCRIPTION)
-], ids=[
-    "Only parameter name",
-    "Parameter name with description",
-    "Parameter name with type",
-    "Parameter name with type and description"
-])
+],
+                         ids=[
+                             "Only parameter name", "Parameter name with description", "Parameter name with type",
+                             "Parameter name with type and description"
+                         ])
 def test_register_event_valid_parameter(parameter) -> None:
     """
     Register an event and check that valid parameters can be set without a raised exception.
@@ -184,9 +171,11 @@ def test_register_event_raise_duplicated_parameter() -> None:
     """
     _reset_x_core()
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Attempted to register event '{EVENT_IDENTIFIER_1}', but parameter {EVENT_PARAMETER_NAME_1} is configured "
-            f"twice.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Attempted to register event '{EVENT_IDENTIFIER_1}', but parameter {EVENT_PARAMETER_NAME_1} is "
+                "configured twice.")):
         x_core.register_event(EVENT_IDENTIFIER_1, {EVENT_PARAMETER_NAME_1, (EVENT_PARAMETER_NAME_1, str)})
 
 
@@ -211,9 +200,11 @@ def test_register_node_raise_node_registered_twice() -> None:
     node = Node()
     x_core.register_node(NODE_IDENTIFIER_1, node)
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Attempted to register node '{NODE_IDENTIFIER_1}', but a node with that identifier is already "
-            f"registered.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Attempted to register node '{NODE_IDENTIFIER_1}', but a node with that identifier is already "
+                f"registered.")):
         x_core.register_node(NODE_IDENTIFIER_1, node)
 
 
@@ -237,8 +228,10 @@ def test_register_node_raise_invalid_event() -> None:
             :return: None
             """
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Node '{NODE_IDENTIFIER_1}' handles event '{EVENT_IDENTIFIER_1}', but the event is not registered.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Node '{NODE_IDENTIFIER_1}' handles event '{EVENT_IDENTIFIER_1}', but the event is not registered.")):
         x_core.register_node(NODE_IDENTIFIER_1, Node())
 
 
@@ -265,9 +258,11 @@ def test_register_node_raise_invalid_event_parameters() -> None:
             :return: None
             """
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Node '{NODE_IDENTIFIER_1}' handles event '{EVENT_IDENTIFIER_1}', but the parameters do not match. "
-            f"Event requires: ['{EVENT_PARAMETER_NAME_1}'], handler provides: ['parameter_2'].")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Node '{NODE_IDENTIFIER_1}' handles event '{EVENT_IDENTIFIER_1}', but the parameters do not match. "
+                f"Event requires: ['{EVENT_PARAMETER_NAME_1}'], handler provides: ['parameter_2'].")):
         x_core.register_node(NODE_IDENTIFIER_1, Node())
 
 
@@ -305,8 +300,11 @@ def test_unregister_node_raise_invalid_node() -> None:
     """
     _reset_x_core()
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Attempted to unregister node '{NODE_IDENTIFIER_1}', but no node with that identifier is registered.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Attempted to unregister node '{NODE_IDENTIFIER_1}', but no node with that identifier is registered.")
+    ):
         x_core.unregister_node(NODE_IDENTIFIER_1)
 
 
@@ -346,8 +344,10 @@ def test_start_raise_invalid_maximum_logging_length() -> None:
 
     configuration = XCoreConfiguration(identifier_maximum_logging_length=0)
 
-    with pytest.raises(XNodeException, match=re.escape(
-            "Invalid configuration: 'identifier_maximum_logging_length' has to be greater or equal to 10.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                "Invalid configuration: 'identifier_maximum_logging_length' has to be greater or equal to 10.")):
         x_core.start(configuration)
 
 
@@ -373,9 +373,10 @@ def test_publish_raise_event_not_registered() -> None:
     """
     _reset_x_core()
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Node '{NODE_IDENTIFIER_1}' attempted to publish event '{EVENT_IDENTIFIER_1}' to node "
-            f"'{NODE_IDENTIFIER_2}', but the event is not registered.")):
+    with pytest.raises(XNodeException,
+                       match=re.escape(
+                           f"Node '{NODE_IDENTIFIER_1}' attempted to publish event '{EVENT_IDENTIFIER_1}' to node "
+                           f"'{NODE_IDENTIFIER_2}', but the event is not registered.")):
         x_core.publish(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, NODE_IDENTIFIER_2, {})
 
 
@@ -388,9 +389,10 @@ def test_publish_raise_sender_not_registered() -> None:
 
     x_core.register_event(EVENT_IDENTIFIER_1, set())
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Node '{NODE_IDENTIFIER_1}' attempted to publish event '{EVENT_IDENTIFIER_1}' to node "
-            f"'{NODE_IDENTIFIER_2}', but the sender node is not registered.")):
+    with pytest.raises(XNodeException,
+                       match=re.escape(
+                           f"Node '{NODE_IDENTIFIER_1}' attempted to publish event '{EVENT_IDENTIFIER_1}' to node "
+                           f"'{NODE_IDENTIFIER_2}', but the sender node is not registered.")):
         x_core.publish(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, NODE_IDENTIFIER_2, {})
 
 
@@ -409,9 +411,10 @@ def test_publish_raise_receiver_not_registered() -> None:
     x_core.register_event(EVENT_IDENTIFIER_1, set())
     x_core.register_node(NODE_IDENTIFIER_1, Node())
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Node '{NODE_IDENTIFIER_1}' attempted to publish event '{EVENT_IDENTIFIER_1}' to node "
-            f"'{NODE_IDENTIFIER_2}', but the receiver node is not registered.")):
+    with pytest.raises(XNodeException,
+                       match=re.escape(
+                           f"Node '{NODE_IDENTIFIER_1}' attempted to publish event '{EVENT_IDENTIFIER_1}' to node "
+                           f"'{NODE_IDENTIFIER_2}', but the receiver node is not registered.")):
         x_core.publish(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, NODE_IDENTIFIER_2, {})
 
 
@@ -431,10 +434,11 @@ def test_publish_raise_receiver_not_handles_event() -> None:
     x_core.register_node(NODE_IDENTIFIER_1, Node())
     x_core.register_node(NODE_IDENTIFIER_2, Node())
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Node '{NODE_IDENTIFIER_1}' attempted to publish event '{EVENT_IDENTIFIER_1}' to node "
-            f"'{NODE_IDENTIFIER_2}', but receiver '{NODE_IDENTIFIER_2}' is not subscribed to event "
-            f"'{EVENT_IDENTIFIER_1}'.")):
+    with pytest.raises(XNodeException,
+                       match=re.escape(
+                           f"Node '{NODE_IDENTIFIER_1}' attempted to publish event '{EVENT_IDENTIFIER_1}' to node "
+                           f"'{NODE_IDENTIFIER_2}', but receiver '{NODE_IDENTIFIER_2}' is not subscribed to event "
+                           f"'{EVENT_IDENTIFIER_1}'.")):
         x_core.publish(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, NODE_IDENTIFIER_2, {})
 
 
@@ -481,9 +485,11 @@ def test_broadcast_raise_event_not_registered() -> None:
     """
     _reset_x_core()
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Node '{NODE_IDENTIFIER_1}' attempted to broadcast event '{EVENT_IDENTIFIER_1}', but the event is not "
-            f"registered.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Node '{NODE_IDENTIFIER_1}' attempted to broadcast event '{EVENT_IDENTIFIER_1}', but the event is not "
+                f"registered.")):
         x_core.broadcast(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, {})
 
 
@@ -496,9 +502,11 @@ def test_broadcast_raise_sender_not_registered() -> None:
 
     x_core.register_event(EVENT_IDENTIFIER_1, set())
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Node '{NODE_IDENTIFIER_1}' attempted to broadcast event '{EVENT_IDENTIFIER_1}', but the sender node is "
-            "not registered.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Node '{NODE_IDENTIFIER_1}' attempted to broadcast event '{EVENT_IDENTIFIER_1}', but the sender node "
+                "is not registered.")):
         x_core.broadcast(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, {})
 
 
@@ -789,9 +797,11 @@ def test_build_event_raise_event_parameter_not_matching() -> None:
 
     with pytest.raises(XNodeException,
                        match="Event 'event' cannot be constructed, event requires: \\['parameter_1|2', "
-                             "'parameter_1|2'\\], provided are: \\['parameter_3|4', 'parameter_3|4'\\]\\."):
-        x_core._build_event(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, NODE_IDENTIFIER_2,
-                            {provided_parameter_1: 42, provided_parameter_2: "test"})
+                       "'parameter_1|2'\\], provided are: \\['parameter_3|4', 'parameter_3|4'\\]\\."):
+        x_core._build_event(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, NODE_IDENTIFIER_2, {
+            provided_parameter_1: 42,
+            provided_parameter_2: "test"
+        })
 
 
 def test_build_event() -> None:
@@ -803,8 +813,10 @@ def test_build_event() -> None:
 
     x_core.register_event(EVENT_IDENTIFIER_1, {EVENT_PARAMETER_NAME_1, (EVENT_PARAMETER_NAME_2, bool)})
 
-    event = x_core._build_event(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, NODE_IDENTIFIER_2,
-                                {EVENT_PARAMETER_NAME_1: 42, EVENT_PARAMETER_NAME_2: "test"})
+    event = x_core._build_event(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, NODE_IDENTIFIER_2, {
+        EVENT_PARAMETER_NAME_1: 42,
+        EVENT_PARAMETER_NAME_2: "test"
+    })
 
     assert event.identifier == EVENT_IDENTIFIER_1
     assert event.sender_identifier == NODE_IDENTIFIER_1
@@ -882,7 +894,9 @@ def test_create_parameters_logging_string(monkeypatch) -> None:
     event_mock = MagicMock()
     event_mock.event_description.log_level = logging.INFO
     event_mock.event_description.parameters = {(EVENT_PARAMETER_NAME_1, int)}
-    event_mock.parameters = {EVENT_PARAMETER_NAME_1: "21"}
+    event_mock.parameters = {
+        EVENT_PARAMETER_NAME_1: "21"
+    }
 
     assert x_core._create_parameters_logging_string(event_mock) == f" | {EVENT_PARAMETER_NAME_1} (int / str): '21'"
 
@@ -1042,9 +1056,11 @@ def test_execute_event_raise_event_not_subscribed() -> None:
     event_mock.identifier = EVENT_IDENTIFIER_1
     event_mock.receiver_identifier = NODE_IDENTIFIER_1
 
-    with pytest.raises(XNodeException, match=re.escape(
-            f"Attempted to send event with identifier '{EVENT_IDENTIFIER_1}' to node '{NODE_IDENTIFIER_1}', but the "
-            f"node is not subscribed to that event.")):
+    with pytest.raises(
+            XNodeException,
+            match=re.escape(
+                f"Attempted to send event with identifier '{EVENT_IDENTIFIER_1}' to node '{NODE_IDENTIFIER_1}', but "
+                "the node is not subscribed to that event.")):
         x_core._execute_event(event_mock)
 
 
@@ -1092,7 +1108,10 @@ def test_execute_event() -> None:
     event_mock.identifier = EVENT_IDENTIFIER_1
     event_mock.receiver_identifier = NODE_IDENTIFIER_1
     event_mock.event_description = XEventDescription(parameter_description)
-    event_mock.parameters = {EVENT_PARAMETER_NAME_1: parameter_1_value, EVENT_PARAMETER_NAME_2: parameter_2_value}
+    event_mock.parameters = {
+        EVENT_PARAMETER_NAME_1: parameter_1_value,
+        EVENT_PARAMETER_NAME_2: parameter_2_value
+    }
 
     x_core._execute_event(event_mock)
     assert node.is_called
@@ -1108,8 +1127,7 @@ def test_extract_undo_events_not_a_generator() -> None:
     assert len(x_core._extract_undo_events(None, "")) == 0
 
 
-@pytest.mark.parametrize("undo_event",
-                         [None, (None,), (None, None, None)],
+@pytest.mark.parametrize("undo_event", [None, (None, ), (None, None, None)],
                          ids=["Not a tuple", "Too few elements", "Too many elements"])
 def test_extract_undo_events_invalid_undo_event_type(undo_event) -> None:
     """
@@ -1144,7 +1162,9 @@ def test_extract_undo_events(monkeypatch) -> None:
     """
     _reset_x_core()
 
-    parameters = {"test": 42}
+    parameters = {
+        "test": 42
+    }
 
     build_event_mock = MagicMock()
     build_event_mock.return_value = MagicMock()
