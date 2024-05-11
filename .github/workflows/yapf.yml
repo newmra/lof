@@ -3,11 +3,8 @@ name: Yapf
 on: [ pull_request ]
 
 jobs:
-  build:
+  execute-yapf:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ "3.10" ]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -22,5 +19,13 @@ jobs:
       - name: Formatting the code
         run: |
           poetry run yapf -i -r --style=.yapf xnodes tests
+  check-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check for uncommitted changes
+        uses: ${{ runner.os }}-latest/git@v4
         with:
-          fail-if-not-clean: true
+          args: diff-index --quiet HEAD --
+        # Fail the workflow if exit code is non-zero (uncommitted changes)
+        fail-on-stderr: true
