@@ -21,7 +21,7 @@ jobs:
           poetry run yapf -i -r --style=.yapf xnodes tests
       - name: Check for changes
         run: |
-           diff_output=$(git diff --name-only HEAD^ HEAD)
+           diff_output=$(git diff --name-only HEAD^ -- HEAD)
            if [ -n "$diff_output" ]; then
              exit 1
            fi
