@@ -42,9 +42,8 @@ EVENT_PARAMETER_TYPE_3 = Tuple[str, type, str]
 # Fourth possible type: Name of the parameter and description of the parameter.
 EVENT_PARAMETER_TYPE_4 = Tuple[str, str]
 
-EVENT_PARAMETER_TYPE = Union[
-    EVENT_PARAMETER_TYPE_1, EVENT_PARAMETER_TYPE_2, EVENT_PARAMETER_TYPE_3, EVENT_PARAMETER_TYPE_4]
-
+EVENT_PARAMETER_TYPE = Union[EVENT_PARAMETER_TYPE_1, EVENT_PARAMETER_TYPE_2, EVENT_PARAMETER_TYPE_3,
+                             EVENT_PARAMETER_TYPE_4]
 
 # pylint: enable = invalid-name
 
@@ -81,9 +80,7 @@ X_CLEAR_UNDO_REDO_EVENTS = "X_CLEAR_UNDO_REDO_EVENTS"
 _UNDO_STACK: List[List[XEvent]] = []
 _REDO_STACK: List[List[XEvent]] = []
 
-_NODE_IDENTIFIERS = {
-    X_CORE_NODE_IDENTIFIER
-}
+_NODE_IDENTIFIERS = {X_CORE_NODE_IDENTIFIER}
 
 _EVENT_SUBSCRIPTIONS: Dict[str, Set[str]] = defaultdict(set)
 _EVENT_SUBSCRIPTIONS[X_UNDO_EVENT].add(X_CORE_NODE_IDENTIFIER)
@@ -100,26 +97,13 @@ _EVENT_HANDLERS: Dict[Tuple[str, str], Callable] = {
 # pylint: enable = unnecessary-lambda
 
 _EVENT_DESCRIPTIONS: Dict[str, XEventDescription] = {
-    X_CORE_START: XEventDescription(
-        set(), logging.INFO
-    ),
-    X_UNDO_EVENT: XEventDescription(
-        set(), logging.INFO
-    ),
-    X_REDO_EVENT: XEventDescription(
-        set(), logging.INFO
-    ),
+    X_CORE_START: XEventDescription(set(), logging.INFO),
+    X_UNDO_EVENT: XEventDescription(set(), logging.INFO),
+    X_REDO_EVENT: XEventDescription(set(), logging.INFO),
 
     # (Args: Undo counter, redo counter)
-    X_MAP_UNDO_REDO_COUNTERS: XEventDescription(
-        {
-            ("undo_counter", int),
-            ("redo_counter", int)
-        }, logging.INFO
-    ),
-    X_CLEAR_UNDO_REDO_EVENTS: XEventDescription(
-        set(), logging.INFO
-    )
+    X_MAP_UNDO_REDO_COUNTERS: XEventDescription({("undo_counter", int), ("redo_counter", int)}, logging.INFO),
+    X_CLEAR_UNDO_REDO_EVENTS: XEventDescription(set(), logging.INFO)
 }
 
 # Event length is the length of the biggest event identifier name.
@@ -167,8 +151,7 @@ def _build_event(event_identifier: str, sender_identifier: str, receiver_identif
     return XEvent(event_identifier, event_description, sender_identifier, receiver_identifier, parameters)
 
 
-def register_event(event_identifier: str, parameters: Set[EVENT_PARAMETER_TYPE],
-                   log_level: int = logging.INFO) -> None:
+def register_event(event_identifier: str, parameters: Set[EVENT_PARAMETER_TYPE], log_level: int = logging.INFO) -> None:
     """
     Register a new event in the core, event identifier cannot be registered yet. Once an event is registered it cannot
     be removed.
@@ -202,7 +185,7 @@ def register_event(event_identifier: str, parameters: Set[EVENT_PARAMETER_TYPE],
             f"of type {str(EVENT_PARAMETER_TYPE)}.")
 
         if isinstance(parameter, str):
-            current_parameter = (parameter,)
+            current_parameter = (parameter, )
         elif isinstance(parameter, Iterable):
             current_parameter = tuple(parameter)
         else:
@@ -303,18 +286,16 @@ def start(x_core_configuration: Optional[XCoreConfiguration] = None) -> None:
         _CONFIGURATION = x_core_configuration
 
     if _CONFIGURATION.identifier_maximum_logging_length < MINIMUM_IDENTIFIER_MAXIMUM_LOGGING_LENGTH:
-        raise XNodeException(
-            f"Invalid configuration: 'identifier_maximum_logging_length' has to be "
-            f"greater or equal to {MINIMUM_IDENTIFIER_MAXIMUM_LOGGING_LENGTH}.")
+        raise XNodeException(f"Invalid configuration: 'identifier_maximum_logging_length' has to be "
+                             f"greater or equal to {MINIMUM_IDENTIFIER_MAXIMUM_LOGGING_LENGTH}.")
 
     LOGGER.setLevel(_CONFIGURATION.log_level)
 
     broadcast(X_CORE_START, X_CORE_NODE_IDENTIFIER, {})
 
 
-def publish(
-        event_identifier: str, sender_identifier: str, receiver_identifier: str, parameters: Dict[str, object]
-) -> None:
+def publish(event_identifier: str, sender_identifier: str, receiver_identifier: str, parameters: Dict[str,
+                                                                                                      object]) -> None:
     """
     Publish a directed event to another node. The event has to be registered and the receiver node identifier has to be
     registered. Additionally, the parameters have to match the parameters of the registered event.
@@ -337,12 +318,10 @@ def publish(
         raise XNodeException(f"{base_error_message}, but the receiver node is not registered.")
 
     if (event_identifier, receiver_identifier) not in _EVENT_HANDLERS:
-        raise XNodeException(
-            f"{base_error_message}, but receiver '{receiver_identifier}' is not subscribed to event "
-            f"'{event_identifier}'.")
+        raise XNodeException(f"{base_error_message}, but receiver '{receiver_identifier}' is not subscribed to event "
+                             f"'{event_identifier}'.")
 
-    _publish_events(
-        [_build_event(event_identifier, sender_identifier, receiver_identifier, parameters)], is_undo=False)
+    _publish_events([_build_event(event_identifier, sender_identifier, receiver_identifier, parameters)], is_undo=False)
 
 
 def broadcast(event_identifier: str, sender_identifier: str, parameters: Dict[str, object]) -> None:
@@ -364,9 +343,8 @@ def broadcast(event_identifier: str, sender_identifier: str, parameters: Dict[st
         raise XNodeException(f"{base_error_message}, but the sender node is not registered.")
 
     events = [
-        _build_event(
-            event_identifier, sender_identifier, handler_id, parameters
-        ) for handler_id in _EVENT_SUBSCRIPTIONS[event_identifier]
+        _build_event(event_identifier, sender_identifier, handler_id, parameters)
+        for handler_id in _EVENT_SUBSCRIPTIONS[event_identifier]
     ]
 
     if events:
@@ -406,10 +384,10 @@ def _create_base_logging_string(event: XEvent) -> str:
     :param event: Event to create the base logging string for.
     :return: Base logging string of the passed event.
     """
-    from_str = (" " * (_CONFIGURATION.identifier_maximum_logging_length - len(event.sender_identifier))
-                + event.sender_identifier)
-    to_str = event.receiver_identifier + " " * (
-            _CONFIGURATION.identifier_maximum_logging_length - len(event.receiver_identifier))
+    from_str = (" " * (_CONFIGURATION.identifier_maximum_logging_length - len(event.sender_identifier)) +
+                event.sender_identifier)
+    to_str = event.receiver_identifier + " " * (_CONFIGURATION.identifier_maximum_logging_length -
+                                                len(event.receiver_identifier))
 
     remaining_dashes = _EVENT_LENGTH - len(event.identifier)
 
@@ -522,13 +500,15 @@ def _execute_event(event: XEvent) -> GeneratorType:
     :return: An undo event generator which is provided by the event handler of the receiver node.
     """
     if (event.identifier, event.receiver_identifier) not in _EVENT_HANDLERS:
-        raise XNodeException(
-            f"Attempted to send event with identifier '{event.identifier}' to node "
-            f"'{event.receiver_identifier}', but the node is not subscribed to that event.")
+        raise XNodeException(f"Attempted to send event with identifier '{event.identifier}' to node "
+                             f"'{event.receiver_identifier}', but the node is not subscribed to that event.")
 
     parameter_description = event.event_description.parameters
-    return _EVENT_HANDLERS[(event.identifier, event.receiver_identifier)](
-        **{parameter_key[0]: event.parameters[parameter_key[0]] for parameter_key in parameter_description})
+    return _EVENT_HANDLERS[(event.identifier,
+                            event.receiver_identifier)](**{
+                                parameter_key[0]: event.parameters[parameter_key[0]]
+                                for parameter_key in parameter_description
+                            })
 
 
 def _extract_undo_events(undo_event_iterable: Any, receiver_identifier: str) -> List[XEvent]:
@@ -549,12 +529,11 @@ def _extract_undo_events(undo_event_iterable: Any, receiver_identifier: str) -> 
         undo_event_identifier, undo_event_parameters = undo_event
 
         if not isinstance(undo_event_parameters, dict):
-            raise XNodeException(
-                f"Undo event parameters has an invalid type, should be dict, is: "
-                f"'{type(undo_event_parameters).__name__}'.")
+            raise XNodeException(f"Undo event parameters has an invalid type, should be dict, is: "
+                                 f"'{type(undo_event_parameters).__name__}'.")
 
-        undo_events.append(_build_event(
-            undo_event_identifier, receiver_identifier, receiver_identifier, undo_event_parameters))
+        undo_events.append(
+            _build_event(undo_event_identifier, receiver_identifier, receiver_identifier, undo_event_parameters))
 
     return undo_events
 
@@ -611,11 +590,7 @@ def _publish_undo_redo_counters() -> None:
     Publish the undo and redo counters.
     :return: None
     """
-    broadcast(
-        X_MAP_UNDO_REDO_COUNTERS,
-        X_CORE_NODE_IDENTIFIER,
-        {
-            "undo_counter": len(_UNDO_STACK),
-            "redo_counter": len(_REDO_STACK)
-        }
-    )
+    broadcast(X_MAP_UNDO_REDO_COUNTERS, X_CORE_NODE_IDENTIFIER, {
+        "undo_counter": len(_UNDO_STACK),
+        "redo_counter": len(_REDO_STACK)
+    })

@@ -15,19 +15,7 @@ from .x_event_handler import x_event_handler
 from .x_node import XNode
 
 __all__ = [
-    "register_event",
-    "register_node",
-    "unregister_node",
-    "start",
-    "publish",
-    "broadcast",
-    "add_undo_events",
-    "X_CORE_NODE_IDENTIFIER",
-    "X_CORE_START",
-    "X_UNDO_EVENT",
-    "X_REDO_EVENT",
-    "X_MAP_UNDO_REDO_COUNTERS",
-    "X_CLEAR_UNDO_REDO_EVENTS",
-    "x_event_handler",
-    "XNode"
+    "register_event", "register_node", "unregister_node", "start", "publish", "broadcast", "add_undo_events",
+    "X_CORE_NODE_IDENTIFIER", "X_CORE_START", "X_UNDO_EVENT", "X_REDO_EVENT", "X_MAP_UNDO_REDO_COUNTERS",
+    "X_CLEAR_UNDO_REDO_EVENTS", "x_event_handler", "XNode"
 ]
