@@ -42,7 +42,8 @@ EVENT_PARAMETER_TYPE_3 = Tuple[str, type, str]
 # Fourth possible type: Name of the parameter and description of the parameter.
 EVENT_PARAMETER_TYPE_4 = Tuple[str, str]
 
-EVENT_PARAMETER_TYPE = Union[EVENT_PARAMETER_TYPE_1, EVENT_PARAMETER_TYPE_2, EVENT_PARAMETER_TYPE_3,
+EVENT_PARAMETER_TYPE = Union[EVENT_PARAMETER_TYPE_1,
+EVENT_PARAMETER_TYPE_2, EVENT_PARAMETER_TYPE_3,
                              EVENT_PARAMETER_TYPE_4]
 
 # pylint: enable = invalid-name
