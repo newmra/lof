@@ -174,8 +174,8 @@ def test_register_event_raise_duplicated_parameter() -> None:
     with pytest.raises(
             XNodeException,
             match=re.escape(
-                f"Attempted to register event '{EVENT_IDENTIFIER_1}', but parameter {EVENT_PARAMETER_NAME_1} is configured "
-                f"twice.")):
+                f"Attempted to register event '{EVENT_IDENTIFIER_1}', but parameter {EVENT_PARAMETER_NAME_1} is "
+                "configured twice.")):
         x_core.register_event(EVENT_IDENTIFIER_1, {EVENT_PARAMETER_NAME_1, (EVENT_PARAMETER_NAME_1, str)})
 
 
@@ -505,8 +505,8 @@ def test_broadcast_raise_sender_not_registered() -> None:
     with pytest.raises(
             XNodeException,
             match=re.escape(
-                f"Node '{NODE_IDENTIFIER_1}' attempted to broadcast event '{EVENT_IDENTIFIER_1}', but the sender node is "
-                "not registered.")):
+                f"Node '{NODE_IDENTIFIER_1}' attempted to broadcast event '{EVENT_IDENTIFIER_1}', but the sender node "
+                "is not registered.")):
         x_core.broadcast(EVENT_IDENTIFIER_1, NODE_IDENTIFIER_1, {})
 
 
@@ -1059,8 +1059,8 @@ def test_execute_event_raise_event_not_subscribed() -> None:
     with pytest.raises(
             XNodeException,
             match=re.escape(
-                f"Attempted to send event with identifier '{EVENT_IDENTIFIER_1}' to node '{NODE_IDENTIFIER_1}', but the "
-                f"node is not subscribed to that event.")):
+                f"Attempted to send event with identifier '{EVENT_IDENTIFIER_1}' to node '{NODE_IDENTIFIER_1}', but "
+                "the node is not subscribed to that event.")):
         x_core._execute_event(event_mock)
 
 
