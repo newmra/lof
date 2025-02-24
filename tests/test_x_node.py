@@ -4,9 +4,6 @@ xnodes: Exchange nodes framework
         provides the possibility to undo made changes.
 
 Author: Ralph Neumann (@newmra)
-
-This framework is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
-License as published by the Free Software Foundation, see <https://www.gnu.org/licenses/>.
 """
 
 from unittest.mock import MagicMock
@@ -15,14 +12,14 @@ from xnodes import XNode
 
 NODE_TYPE = "MY_NODE"
 
-EVENT_IDENTIFIER = "EVENT_IDENTIFIER"
+EVENT_ID = "EVENT_ID"
 PARAMETER_1 = 42
 PARAMETER_2 = "TEST"
 
 
 def test_anonymous_node_creation(monkeypatch) -> None:
     """
-    Construct an XNode with a not-static node type and expect an anonymous identifier.
+    Construct an XNode with a not-static node type and expect an anonymous ID.
     :param monkeypatch: Monkeypatch.
     :return: None
     """
@@ -35,7 +32,7 @@ def test_anonymous_node_creation(monkeypatch) -> None:
 
 def test_static_node_creation(monkeypatch) -> None:
     """
-    Construct an XNode with a static node type and expect the identifier to be the node type.
+    Construct an XNode with a static node type and expect the ID to be the node type.
     :param monkeypatch: Monkeypatch.
     :return: None
     """
@@ -62,7 +59,7 @@ def test_delete_node(monkeypatch) -> None:
     register_node_mock.assert_called_once_with(NODE_TYPE, node)
 
     node.delete()
-    unregister_node_mock.assert_called_once_with(node.identifier)
+    unregister_node_mock.assert_called_once_with(node.id)
 
 
 def test_publish_event(monkeypatch) -> None:
@@ -71,7 +68,7 @@ def test_publish_event(monkeypatch) -> None:
     :param monkeypatch: Monkeypatch.
     :return: None
     """
-    receiver_node_identifier = "OTHER_NODE"
+    receiver_node_id = "OTHER_NODE"
     expected_event_parameters = {
         "parameter_1": PARAMETER_1,
         "parameter_2": PARAMETER_2
@@ -86,8 +83,8 @@ def test_publish_event(monkeypatch) -> None:
     node = XNode(NODE_TYPE, is_static=True)
     register_node_mock.assert_called_once_with(NODE_TYPE, node)
 
-    node.publish(EVENT_IDENTIFIER, receiver_node_identifier, parameter_1=PARAMETER_1, parameter_2=PARAMETER_2)
-    publish_mock.assert_called_once_with(EVENT_IDENTIFIER, node.identifier, receiver_node_identifier,
+    node.publish(EVENT_ID, receiver_node_id, parameter_1=PARAMETER_1, parameter_2=PARAMETER_2)
+    publish_mock.assert_called_once_with(EVENT_ID, node.id, receiver_node_id,
                                          expected_event_parameters)
 
 
@@ -111,5 +108,5 @@ def test_broadcast_event(monkeypatch) -> None:
     node = XNode(NODE_TYPE, is_static=True)
     register_node_mock.assert_called_once_with(NODE_TYPE, node)
 
-    node.broadcast(EVENT_IDENTIFIER, parameter_1=PARAMETER_1, parameter_2=PARAMETER_2)
-    broadcast_mock.assert_called_once_with(EVENT_IDENTIFIER, node.identifier, expected_event_parameters)
+    node.broadcast(EVENT_ID, parameter_1=PARAMETER_1, parameter_2=PARAMETER_2)
+    broadcast_mock.assert_called_once_with(EVENT_ID, node.id, expected_event_parameters)

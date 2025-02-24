@@ -4,9 +4,6 @@ xnodes: Exchange nodes framework
         provides the possibility to undo made changes.
 
 Author: Ralph Neumann (@newmra)
-
-This framework is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
-License as published by the Free Software Foundation, see <https://www.gnu.org/licenses/>.
 """
 
 from xnodes import x_core
@@ -27,39 +24,39 @@ class XNode:
         """
         super().__init__(*args, **kwargs)
 
-        self.__identifier = node_type if is_static else f"{node_type}_{id(self)}"
-        x_core.register_node(self.__identifier, self)
+        self.__id = node_type if is_static else f"{node_type}_{id(self)}"
+        x_core.register_node(self.__id, self)
 
     def delete(self) -> None:
         """
         Delete the node and unregister it from the core.
         :return: None
         """
-        x_core.unregister_node(self.__identifier)
+        x_core.unregister_node(self.__id)
 
     @property
-    def identifier(self) -> str:
+    def id(self) -> str:
         """
-        Get the identifier of the node.
-        :return: Identifier of the node.
+        Get the ID of the node.
+        :return: ID of the node.
         """
-        return self.__identifier
+        return self.__id
 
-    def publish(self, event_identifier: str, receiver_identifier: str, **parameters) -> None:
+    def publish(self, event_id: str, receiver_id: str, **parameters) -> None:
         """
         Publish a new event and send it to a single node.
-        :param event_identifier: Identifier of the event to publish.
-        :param receiver_identifier: Identifier of the node to with the event shall be delivered.
+        :param event_id: ID of the event to publish.
+        :param receiver_id: ID of the node to with the event shall be delivered.
         :param parameters: Parameters of the event.
         :return: None
         """
-        x_core.publish(event_identifier, self.__identifier, receiver_identifier, parameters)
+        x_core.publish(event_id, self.__id, receiver_id, parameters)
 
-    def broadcast(self, event_identifier: str, **parameters) -> None:
+    def broadcast(self, event_id: str, **parameters) -> None:
         """
         Publish a new event and send it to all nodes which subscribed to the event.
-        :param event_identifier: Identifier of the event to publish.
+        :param event_id: ID of the event to publish.
         :param parameters: Parameters of the event.
         :return: None
         """
-        x_core.broadcast(event_identifier, self.__identifier, parameters)
+        x_core.broadcast(event_id, self.__id, parameters)

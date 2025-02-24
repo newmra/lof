@@ -6,17 +6,19 @@ xnodes: Exchange nodes framework
 Author: Ralph Neumann (@newmra)
 """
 
-import logging
 from dataclasses import dataclass
+from typing import Dict
+
+from xnodes import x_event_description
 
 
 @dataclass
-class XCoreConfiguration:
+class XEvent:
     """
-    Configuration of the XCore.
+    Complete event which is sent from one node to another node.
     """
-    log_level: int = logging.INFO
-    log_event_parameters: bool = True
-    log_parameter_type_info: bool = False
-    id_maximum_logging_length: int = 40
-    maximum_undo_events: int = 1000
+    id: str
+    event_description: x_event_description.XEventDescription
+    sender_id: str
+    receiver_id: str
+    parameters: Dict[str, object]
